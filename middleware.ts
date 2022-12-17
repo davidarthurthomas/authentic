@@ -26,30 +26,22 @@ export default withClerkMiddleware((req: NextRequest) => {
       in this case, our team slug is "platformize", thus *.platformize.vercel.app works. Do note that you'll
       still need to add "*.platformize.vercel.app" as a wildcard domain on your Vercel dashboard. */
   const currentHost =
-    process.env.NODE_ENV === "production" && process.env.VERCEL === "1"
-      ? hostname
-          .replace(`.vercel.pub`, "")
-          .replace(`.platformize.vercel.app`, "")
+    process.env.NODE_ENV === "production"
+      ? hostname.replace(`.main.d18sc78n750wbb.amplifyapp.com/`, "")
       : hostname.replace(`.localhost:3000`, "");
 
   // rewrites for app pages
   if (currentHost == "app") {
-    // if (
-    //   url.pathname === "/login" &&
-    //   (req.cookies.get("next-auth.session-token") ||
-    //     req.cookies.get("__Secure-next-auth.session-token"))
-    // ) {
-    //   url.pathname = "/";
-    //   return NextResponse.redirect(url);
-    // }
-
     url.pathname = `/app${url.pathname}`;
     return NextResponse.rewrite(url);
   }
 
   // rewrite root application to `/home` folder
   // in the future, we'll need to add a authenticinsurance.com
-  if (hostname === "localhost:3000") {
+  if (
+    hostname === "localhost:3000" ||
+    hostname === "https://main.d18sc78n750wbb.amplifyapp.com/"
+  ) {
     url.pathname = `/home${url.pathname}`;
     return NextResponse.rewrite(url);
   }
