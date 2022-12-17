@@ -1,12 +1,32 @@
 import { useRouter } from "next/router";
-import { GetStaticPaths, GetStaticProps } from "next/types";
+import { GetServerSideProps } from "next/types";
 import prisma from "../../../lib/prisma";
 
-export default function Site({ stringifiedData }: { stringifiedData: string }) {
+export const getServerSideProps: GetServerSideProps<any> = async ({
+  params,
+}) => {
+  if (!params) throw new Error("No path parameters found");
+
+  const { site } = params;
+
+  const organization = await prisma.organization.findUnique({
+    where: {
+      subdomain: site as string,
+    },
+  });
+
+  return {
+    props: {
+      organization: JSON.stringify(organization),
+    },
+  };
+};
+
+export default function Site({ organization }: { organization: string }) {
   const router = useRouter();
   if (router.isFallback) return <div>Loading...</div>;
 
-  const { name } = JSON.parse(stringifiedData);
+  const { name } = JSON.parse(organization);
 
   return (
     <main className="h-screen w-screen bg-[#fefbf3] flex flex-col items-center justify-center gap-12">
@@ -25,41 +45,3 @@ export default function Site({ stringifiedData }: { stringifiedData: string }) {
     </main>
   );
 }
-
-export const getStaticPaths: GetStaticPaths<any> = async () => {
-  const organizations = await prisma.organization.findMany({});
-
-  const allPaths = [...organizations.map(({ subdomain }) => subdomain)].filter(
-    (path) => path
-  ) as Array<string>;
-
-  return {
-    paths: allPaths.map((path) => ({
-      params: {
-        site: path,
-      },
-    })),
-    fallback: false,
-  };
-};
-
-export const getStaticProps: GetStaticProps<any> = async ({ params }) => {
-  if (!params) throw new Error("No path parameters found");
-
-  const { site } = params;
-
-  const data = await prisma.organization.findUnique({
-    where: {
-      subdomain: site as string,
-    },
-  });
-
-  if (!data) return { notFound: true, revalidate: 10 };
-
-  return {
-    props: {
-      stringifiedData: JSON.stringify(data),
-    },
-    revalidate: 3600,
-  };
-};

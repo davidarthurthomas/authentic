@@ -6,7 +6,7 @@ export default function SignUpPage() {
       <CreateOrganization
         path="/create-organization"
         routing="path"
-        afterCreateOrganizationUrl="/new-organization"
+        afterCreateOrganizationUrl="/"
         appearance={{
           elements: {
             card: "bg-[#FEFBF3] max-w-lg",

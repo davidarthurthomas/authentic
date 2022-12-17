@@ -19,6 +19,7 @@ model User {
 
 model Organization {
   id        String @id @default(auto()) @map("_id") @db.ObjectId
+  clerkId   String @unique
   name      String
   subdomain String @unique
   User      User?
