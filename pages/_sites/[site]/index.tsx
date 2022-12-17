@@ -6,15 +6,7 @@ export default function Site({ stringifiedData }: { stringifiedData: string }) {
   const router = useRouter();
   if (router.isFallback) return <div>Loading...</div>;
 
-  let organization;
-  try {
-    JSON.parse(stringifiedData);
-  } catch (err) {
-    console.log(err);
-    organization = { name: "Acme" };
-  }
-
-  const { name } = organization;
+  const { name } = JSON.parse(stringifiedData);
 
   return (
     <main className="h-screen w-screen bg-[#fefbf3] flex flex-col items-center justify-center gap-12">
