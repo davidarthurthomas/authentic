@@ -1,7 +1,11 @@
+import { useRouter } from "next/router";
 import { GetStaticPaths, GetStaticProps } from "next/types";
 import prisma from "../../../lib/prisma";
 
 export default function Site({ stringifiedData }: { stringifiedData: string }) {
+  const router = useRouter();
+  if (router.isFallback) return <div>Loading...</div>;
+
   const { name } = JSON.parse(stringifiedData);
 
   return (
